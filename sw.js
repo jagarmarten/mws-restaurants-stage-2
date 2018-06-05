@@ -2,7 +2,7 @@
 //service worker file
 
 //cacheName
-const cacheName = 'v12';
+const cacheName = 'v13';
 const cacheFiles = [
     './',
     './index.html',
@@ -22,17 +22,7 @@ const cacheFiles = [
     'img/7.jpg',
     'img/8.jpg',
     'img/9.jpg',
-    'img/10.jpg',
-    'img/1-lazy.jpg',
-    'img/2-lazy.jpg',
-    'img/3-lazy.jpg',
-    'img/4-lazy.jpg',
-    'img/5-lazy.jpg',
-    'img/6-lazy.jpg',
-    'img/7-lazy.jpg',
-    'img/8-lazy.jpg',
-    'img/9-lazy.jpg',
-    'img/10-lazy.jpg'
+    'img/10.jpg'
 ];
 
 
