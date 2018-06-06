@@ -63,14 +63,13 @@ class DBHelper {
         dbPromise.then(db => {
           const tx = db.transaction('restaurants', 'readwrite');
           var keyValStore = tx.objectStore('restaurants')
-          /*for (var i = 0; i < restaurants.length; i++) {
-            keyValStore.put(restaurants[i]);
-          }*/
 
           restaurants.forEach(function (restaurant) {
             keyValStore.put(restaurant);
           })
-        }).then(() => console.trace("Done!"));
+
+          return keyValStore.getAll();
+        }).then((allObjs) => console.log(allObjs));
         callback(null, restaurants);
       }).catch(function (error) {
         console.log("Houston, we had an error!", error);
@@ -88,6 +87,7 @@ class DBHelper {
         callback(error, null);
       } else {
         const restaurant = restaurants.find(r => r.id == id);
+        console.log(restaurant);
         if (restaurant) { // Got the restaurant
           callback(null, restaurant);
         } else { // Restaurant does not exist in the database
