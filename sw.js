@@ -2,7 +2,7 @@
 //service worker file
 
 //cacheName
-const cacheName = 'v13';
+/*const cacheName = 'v14';
 const cacheFiles = [
     './',
     './index.html',
@@ -11,7 +11,6 @@ const cacheFiles = [
     './js/dbhelper.js',
     './js/main.js',
     './js/restaurant_info.js',
-    './js/app.js',
     './js/echo.min.js',
     'img/1.jpg',
     'img/2.jpg',
@@ -88,6 +87,56 @@ self.addEventListener('fetch', function (event) {
                     });
             }) // end caches.match(event.request)
     ); // end event.respondWith
-});
+});*/
 
 //this tutorials helped me the most: https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker-slides and https://www.youtube.com/watch?v=BfL3pprhnms
+
+// sw.js
+
+const cacheName = 'v16';
+const filesToCache = [
+    './',
+    './index.html',
+    './css/styles.css',
+    './js/dbhelper.js',
+    './js/main.js',
+    './js/restaurant_info.js',
+    './js/echo.min.js',
+    'sw.js',
+    './restaurant.html'
+];
+
+self.addEventListener("install", function (event) {
+    // Perform install steps
+    console.log("[Servicework] Install");
+    event.waitUntil(
+        caches.open(cacheName).then(function (cache) {
+            console.log("[ServiceWorker] Caching app shell");
+            return cache.addAll(filesToCache);
+        })
+    );
+});
+
+self.addEventListener("activate", function (event) {
+    console.log("[Servicework] Activate");
+    event.waitUntil(
+        caches.keys().then(function (keyList) {
+            return Promise.all(keyList.map(function (key) {
+                if (key !== cacheName) {
+                    console.log("[ServiceWorker] Removing old cache shell", key);
+                    return caches.delete(key);
+                }
+            }));
+        })
+    );
+});
+
+self.addEventListener("fetch", (event) => {
+    console.log("[ServiceWorker] Fetch");
+    event.respondWith(
+        caches.match(event.request).then(function (response) {
+            return response || fetch(event.request);
+        })
+    );
+
+});
