@@ -68,8 +68,7 @@ class DBHelper {
             keyValStore.put(restaurant);
           })
 
-          return keyValStore.getAll();
-        }).then((allObjs) => console.log(allObjs));
+        }).then(() => console.log("IDB log"));
         callback(null, restaurants);
       }).catch(function (error) {
         console.log("Houston, we had an error!", error);

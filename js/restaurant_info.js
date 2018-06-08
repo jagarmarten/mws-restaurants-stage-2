@@ -51,7 +51,7 @@ fetchRestaurantFromURL = (callback) => {
 fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   echo.init({
-    offset: 100,
+    offset: 0,
     throttle: 250,
     unload: false,
     callback: function (element, op) {

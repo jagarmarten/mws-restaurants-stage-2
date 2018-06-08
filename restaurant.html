@@ -85,7 +85,14 @@
       .catch(function (error) {
         console.log('Service Worker Failed to Register', error);
       }); //if there was an error, return the error to the console
-  }</script>
+  }
+    window.addEventListener("beforeinstallprompt", function(e) { 
+    // log the platforms provided as options in an install prompt 
+    console.log(e.platforms); // e.g., ["web", "android", "windows"] 
+    e.userChoice.then(function(outcome) { 
+      console.log(outcome); // either "accepted" or "dismissed"
+    }, handleError); 
+  });</script>
   <script src="./lib/idb.js"></script>
   <script type="application/javascript" charset="utf-8" src="./js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="./js/restaurant_info.js"></script>
