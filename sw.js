@@ -1,6 +1,6 @@
 // sw.js
 
-const cacheName = 'v20';
+const cacheName = 'v26';
 const filesToCache = [
     'sw.js',
     './',
@@ -11,7 +11,8 @@ const filesToCache = [
     './js/restaurant_info.js',
     './js/manifest.json',
     './js/echo.min.js',
-    './restaurant.html'
+    './restaurant.html',
+    './lib/idb.js'
 ];
 
 self.addEventListener("install", function (event) {
@@ -39,14 +40,35 @@ self.addEventListener("activate", function (event) {
     );
 });
 
-self.addEventListener("fetch", (event) => {
-    console.log("[ServiceWorker] Fetch");
+//fetch event - it caches all of the network requests
+self.addEventListener('fetch', (event) => {
+    console.info('Event: Fetch');
+
+    var request = event.request;
+
+    //Tell the browser to wait for newtwork request and respond with below
     event.respondWith(
-        caches.match(event.request).then(function (response) {
-            return response || fetch(event.request);
+        //If request is already in cache, return it
+        caches.match(request).then((response) => {
+            if (response) {
+                return response;
+            }
+
+            //if request is not cached, add it to cache
+            return fetch(request).then((response) => {
+                var responseToCache = response.clone();
+                caches.open(cacheName).then((cache) => {
+                    cache.put(request, responseToCache);
+                });
+
+                return response;
+            });
         })
     );
 });
 
-
-//this tutorials helped me the most: https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker-slides and https://www.youtube.com/watch?v=BfL3pprhnms
+/* Resources
+    https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker-slides 
+    https://www.youtube.com/watch?v=BfL3pprhnms
+    https://github.com/GoogleChromeLabs/sw-toolbox/issues/227
+*/

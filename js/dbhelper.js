@@ -2,27 +2,7 @@
  * Common database helper functions.
  */
 
-/*
-My solution
-for anyone reading this: 
-in fetchRestaurants
-open idb
-then using the db, create a new transaction
-get the ObjectStore from the transaction
-get all items out of the ObjectStore
-then check
-if it returns any items
-if it does then
-return them, otherwise fetch from server
-then
-if the response is good, open a readwrite transaction and objectStore, and put the items in .
-then
-finally
-return the items from the object store
-
-* //**
-*
-Common database helper functions.*/
+/*Common database helper functions.*/
 class DBHelper {
 
   /**
@@ -38,44 +18,67 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
+    const dbPromise = idb.open('restaurantsDB', 1, upgradeDB => {
+      switch (upgradeDB.oldVersion) {
+        case 0:
+          upgradeDB.createObjectStore('restaurants', {
+            keyPath: 'id'
+          });
+      }
+    });
 
-    /*function runCallback(error, restaurants) {
-      if (error) console.log("Houston, we had an error!", error);
-      callback(error, restaurants);
-    }*/
+    if (navigator.onLine) {
+      dbPromise.then(db => {
+        const tx = db.transaction('restaurants', 'readwrite');
+        var keyValStore = tx.objectStore('restaurants');
 
-    //fetch data with Fetch API
-    fetch(DBHelper.DATABASE_URL)
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function (restaurants) {
+        return keyValStore.getAll();
+      }).then((values) => {
+          if (values.length == 0) {
+            //fetch data with Fetch API
+            fetch(DBHelper.DATABASE_URL)
+              .then(function (response) {
+                  return response.json();
+              })
+              .then(function (restaurants) {
 
-        const dbPromise = idb.open('restaurantsDB', 1, upgradeDB => {
-          switch (upgradeDB.oldVersion) {
-            case 0:
-              upgradeDB.createObjectStore('restaurants', {
-                keyPath: 'id'
+                dbPromise.then(db => {
+                  const tx = db.transaction('restaurants', 'readwrite');
+                  var keyValStore = tx.objectStore('restaurants');
+
+                  restaurants.forEach(function (restaurant) {
+                    keyValStore.put(restaurant);
+                  })
+
+                  return tx.complete;
+                }).then(() => console.log("Item added to the restaurantsDB"));
+                callback(null, restaurants);
+              }).catch(function (error) {
+                console.log("Houston, we had an error!", error);
+                callback(error, null);
               });
+          } else {
+            dbPromise.then(db => {
+              const tx = db.transaction('restaurants', 'readwrite');
+              var keyValStore = tx.objectStore('restaurants');
+              return keyValStore.getAll();
+            }).then((restaurants) => {
+              console.log("Fetching from restaurantsDB");
+              callback(null, restaurants);
+            });
           }
         })
-        
-        dbPromise.then(db => {
-          const tx = db.transaction('restaurants', 'readwrite');
-          var keyValStore = tx.objectStore('restaurants')
-
-          restaurants.forEach(function (restaurant) {
-            keyValStore.put(restaurant);
-          })
-
-          return keyValStore.getAll();
-
-        }).then((obj) => console.log(obj));
-        callback(null, restaurants);
-      }).catch(function (error) {
-        console.log("Houston, we had an error!", error);
-        callback(error, null);
-      });
+    } else {
+      dbPromise.then(db => {
+            const tx = db.transaction('restaurants', 'readwrite');
+            var keyValStore = tx.objectStore('restaurants');
+            return keyValStore.getAll();
+          }).then((restaurants) => {
+            console.log("Fetching from restaurantsDB");
+            callback(null, restaurants);
+          });
+    }
+    
   }
 
   /**
