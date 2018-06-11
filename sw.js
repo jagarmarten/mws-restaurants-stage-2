@@ -1,18 +1,30 @@
+
 // sw.js
 
-const cacheName = 'v26';
+const cacheName = 'v32';
 const filesToCache = [
     'sw.js',
     './',
     './index.html',
+    './restaurant.html',
     './css/styles.css',
     './js/dbhelper.js',
     './js/main.js',
     './js/restaurant_info.js',
     './js/manifest.json',
     './js/echo.min.js',
-    './restaurant.html',
-    './lib/idb.js'
+    './lib/idb.js',
+    './img/1.jpg',
+    './img/2.jpg',
+    './img/3.jpg',
+    './img/4.jpg',
+    './img/5.jpg',
+    './img/6.jpg',
+    './img/7.jpg',
+    './img/8.jpg',
+    './img/9.jpg',
+    './img/10.jpg',
+    'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700'
 ];
 
 self.addEventListener("install", function (event) {
@@ -40,6 +52,24 @@ self.addEventListener("activate", function (event) {
     );
 });
 
+self.addEventListener("fetch", (event) => {
+    console.log("[ServiceWorker] Fetch");
+
+    //const referrerURL = event.request.referrer;
+    //console.log(event);
+    const requestUrl = new URL(event.request.url);
+    if (requestUrl.pathname.startsWith('/restaurant.html')) {
+        event.respondWith(caches.match('/restaurant.html'));
+        return;
+    }
+    event.respondWith(
+        caches.match(event.request).then(function (response) {
+            return response || fetch(event.request);
+        })
+    );
+});
+
+/*
 //fetch event - it caches all of the network requests
 self.addEventListener('fetch', (event) => {
     console.info('Event: Fetch');
@@ -65,10 +95,9 @@ self.addEventListener('fetch', (event) => {
             });
         })
     );
-});
+});*/
 
-/* Resources
-    https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker-slides 
-    https://www.youtube.com/watch?v=BfL3pprhnms
+
+/*these tutorials helped me the most: https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker-slides and https://www.youtube.com/watch?v=BfL3pprhnms
     https://github.com/GoogleChromeLabs/sw-toolbox/issues/227
 */

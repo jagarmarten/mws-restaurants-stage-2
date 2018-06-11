@@ -50,15 +50,6 @@ fetchRestaurantFromURL = (callback) => {
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
 
-  echo.init({
-    offset: 0,
-    throttle: 250,
-    unload: false,
-    callback: function (element, op) {
-      console.log(element, 'has been', op + 'ed')
-    }
-  });
-
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -69,8 +60,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.className = 'restaurant-img'
   image.alt = restaurant.name;
   image.title = restaurant.name + " restaurant";
-  image.src = DBHelper.imageUrlForRestaurant(restaurant) + "-lazy.jpg";
-  image.setAttribute('data-echo', DBHelper.imageUrlForRestaurant(restaurant) + ".jpg");
+  image.src = DBHelper.imageUrlForRestaurant(restaurant) + ".jpg";
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;

@@ -12,9 +12,9 @@
             "sizes": "512x512"
         }
     ],
-    "start_url": "/",
+    "start_url": "/mws-restaurants-stage-2/",
     "background_color": "#fff",
     "display": "standalone",
-    "scope": "/",
+    "scope": "/mws-restaurants-stage-2/",
     "theme_color": "#252831"
 }
